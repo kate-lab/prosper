@@ -2,7 +2,7 @@
 
 import { MobileScreen } from '@/components/mobile-screen';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Input } from '@/components/ui/input'; // Corrected Input import
 import { Play, Pause, Loader2, PhoneCall, Send } from 'lucide-react';
 import Image from 'next/image';
 import { useChat } from '@ai-sdk/react';
