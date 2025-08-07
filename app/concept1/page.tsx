@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Send, Loader2 } from 'lucide-react';
 import Image from 'next/image';
-import React from 'react'; // Explicitly import React
+import React from 'react';
 
 export default function Concept1Page() {
   const { messages, sendMessage, status } = useChat({
@@ -25,7 +25,7 @@ export default function Concept1Page() {
   const suggestedPrompts = [
     "I feel like I’m not good enough for the jobs I’m applying to",
     "How can I calm my nerves before an interview?",
-    "I always blank when they ask me about myself, how do I stop that?",
+    "I would like to practice introducing myself",
     "How do I sound confident without coming across as arrogant?",
   ];
 
@@ -46,9 +46,9 @@ export default function Concept1Page() {
   }, [messages]);
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-4 bg-prosper-bg-page"> {/* Updated background color */}
+    <div className="flex-1 flex flex-col items-center justify-center p-4 bg-prosper-bg-page">
       <MobileScreen className="mt-4">
-        <div className="flex flex-col h-full bg-white"> {/* This is the inner app interface background */}
+        <div className="flex flex-col h-full bg-white">
           {/* Top bar with back button and progress bar */}
           <div className="flex items-center p-4 border-b border-prosper-gray-light">
             <div className="flex-1 h-2 bg-prosper-gray-medium rounded-full">
@@ -71,45 +71,23 @@ export default function Concept1Page() {
               </div>
               <div className="bg-prosper-bg-medium p-3 rounded-lg max-w-[70%]">
                 <p className="text-sm text-prosper-text-dark">
-                  Morning! Would you like to practice introducing yourself?
+                  Morning! How can I help?
                 </p>
               </div>
             </div>
 
             {/* Suggested Prompts */}
             <div className="flex flex-wrap gap-2 mt-4">
-              <Button
-                key="prompt-0"
-                variant="outline"
-                className="rounded-full text-sm px-3 py-1 h-auto border-prosper-gray-medium text-prosper-text-dark hover:bg-prosper-bg-medium"
-                onClick={() => handleSuggestedPromptClick(suggestedPrompts[0])}
-              >
-                {suggestedPrompts[0]}
-              </Button>
-              <Button
-                key="prompt-1"
-                variant="outline"
-                className="rounded-full text-sm px-3 py-1 h-auto border-prosper-gray-medium text-prosper-text-dark hover:bg-prosper-bg-medium"
-                onClick={() => handleSuggestedPromptClick(suggestedPrompts[1])}
-              >
-                {suggestedPrompts[1]}
-              </Button>
-              <Button
-                key="prompt-2"
-                variant="outline"
-                className="rounded-full text-sm px-3 py-1 h-auto border-prosper-gray-medium text-prosper-text-dark hover:bg-prosper-bg-medium"
-                onClick={() => handleSuggestedPromptClick(suggestedPrompts[2])}
-              >
-                {suggestedPrompts[2]}
-              </Button>
-              <Button
-                key="prompt-3"
-                variant="outline"
-                className="rounded-full text-sm px-3 py-1 h-auto border-prosper-gray-medium text-prosper-text-dark hover:bg-prosper-bg-medium"
-                onClick={() => handleSuggestedPromptClick(suggestedPrompts[3])}
-              >
-                {suggestedPrompts[3]}
-              </Button>
+              {suggestedPrompts.map((prompt, index) => (
+                <Button
+                  key={index}
+                  variant="outline"
+                  className="rounded-full text-sm px-3 py-1 h-auto border-prosper-gray-medium text-prosper-text-dark hover:bg-prosper-bg-medium whitespace-normal" // Added whitespace-normal
+                  onClick={() => handleSuggestedPromptClick(prompt)}
+                >
+                  {prompt}
+                </Button>
+              ))}
             </div>
 
             {messages.map(message => (
