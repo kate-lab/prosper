@@ -87,6 +87,7 @@ const config = {
       fontFamily: {
         inconsolata: ['var(--font-inconsolata)'],
         'roboto-headline': ['var(--font-roboto-headline)'],
+        'libertinus-sans': ['var(--font-libertinus-sans)'], // Added Libertinus Sans
       },
     },
   },

@@ -6,13 +6,13 @@ import React from 'react'; // Explicitly import React
 export default function HomePage() {
   return (
     <main className="flex-1 flex flex-col items-center justify-center p-4 bg-prosper-bg-page"> {/* Updated background color */}
-      <h2 className="text-3xl font-bold font-roboto-headline text-prosper-text-dark mb-8 text-center"> {/* Applied heading font */}
+      <h2 className="text-3xl font-bold font-libertinus-sans text-prosper-text-dark mb-8 text-center"> {/* Applied new heading font */}
         Choose experience {/* Updated copy */}
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl">
         <Card className="flex flex-col p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 bg-white text-prosper-text-dark">
           <CardHeader className="text-center">
-            <CardTitle className="text-sm font-semibold font-roboto-headline"> {/* Updated font size and applied heading font */}
+            <CardTitle className="text-sm font-semibold font-libertinus-sans"> {/* Updated font size and applied heading font */}
               Friendly Text-Coach
             </CardTitle>
           </CardHeader>
@@ -30,7 +30,7 @@ export default function HomePage() {
 
         <Card className="flex flex-col p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 bg-white text-prosper-text-dark">
           <CardHeader className="text-center">
-            <CardTitle className="text-sm font-semibold font-roboto-headline"> {/* Updated font size and applied heading font */}
+            <CardTitle className="text-sm font-semibold font-libertinus-sans"> {/* Updated font size and applied heading font */}
               Visual Buddy App
             </CardTitle>
           </CardHeader>
@@ -48,7 +48,7 @@ export default function HomePage() {
 
         <Card className="flex flex-col p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 bg-white text-prosper-text-dark">
           <CardHeader className="text-center">
-            <CardTitle className="text-sm font-semibold font-roboto-headline"> {/* Updated font size and applied heading font */}
+            <CardTitle className="text-sm font-semibold font-libertinus-sans"> {/* Updated font size and applied heading font */}
               Professional Mentor
             </CardTitle>
           </CardHeader>
