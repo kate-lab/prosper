@@ -9,6 +9,7 @@ import { Mic, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import React from 'react';
 import { SpeechBubble } from '@/components/speech-bubble';
+import ReactMarkdown from 'react-markdown';
 
 export default function Concept2Page() {
   // Define the initial message content separately for immediate display
@@ -249,12 +250,6 @@ export default function Concept2Page() {
     <div className="flex-1 flex flex-col items-center justify-center p-4 bg-prosper-bg-page">
       <MobileScreen className="mt-4">
         <div className="flex flex-col h-full bg-white">
-          {/* Top bar with back button and progress bar */}
-          <div className="flex items-center p-4 border-b border-prosper-gray-light">
-            <div className="flex-1 h-2 bg-prosper-gray-medium rounded-full">
-              <div className="h-full w-2/3 bg-prosper-concept2-purple rounded-full"></div>
-            </div>
-          </div>
 
           {/* Conditional rendering for initial state vs. chat history */}
           {!hasUserSentMessage ? (
@@ -311,7 +306,7 @@ export default function Concept2Page() {
                             />
                           </div>
                           <SpeechBubble direction="left" className="max-w-[70%]">
-                            <p className="text-sm">{messageText}</p>
+                            <ReactMarkdown className="text-sm">{messageText}</ReactMarkdown>
                           </SpeechBubble>
                         </div>
                       </div>
@@ -332,7 +327,7 @@ export default function Concept2Page() {
                             />
                           </div>
                           <SpeechBubble direction="left" className="max-w-[70%]">
-                            <p className="text-sm">{sentence.trim()}</p>
+                            <ReactMarkdown className="text-sm">{sentence.trim()}</ReactMarkdown>
                           </SpeechBubble>
                         </div>
                       </div>
@@ -347,7 +342,7 @@ export default function Concept2Page() {
                     >
                       <SpeechBubble inverted direction="right" className="max-w-[70%]">
                         {message.parts.map((part, idx) =>
-                          part.type === 'text' ? <span key={idx}>{part.text}</span> : null,
+                          part.type === 'text' ? <ReactMarkdown key={idx}>{part.text}</ReactMarkdown> : null,
                         )}
                       </SpeechBubble>
                     </div>

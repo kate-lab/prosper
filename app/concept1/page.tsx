@@ -9,8 +9,16 @@ import { Button } from '@/components/ui/button';
 import { Send, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import React from 'react';
+import ReactMarkdown from 'react-markdown';
 
 export default function Concept1Page() {
+  const initialAssistantMessageContent = 'Hi Ava, ready to do some more practicing how to introduce yourself?';
+
+  // State to track if the user has sent their first message (after the static greeting)
+  const [isFirstUserMessageSent, setIsFirstUserMessageSent] = useState(false);
+  // Ref to store the original content of the first user message for display
+  const originalFirstUserInputRef = useRef<string | null>(null);
+
   const { messages, sendMessage, status } = useChat({
     transport: new DefaultChatTransport({
       api: '/api/chat',
@@ -18,25 +26,25 @@ export default function Concept1Page() {
     body: {
       conceptId: 'concept1', // Pass the concept ID to the API route
     },
+    // No initialMessages here; the first greeting is static UI
   });
   const [input, setInput] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const suggestedPrompts = [
-    "I feel like I’m not good enough for the jobs I’m applying to",
-    "How can I calm my nerves before an interview?",
-    "I would like to practice introducing myself",
-    "How do I sound confident without coming across as arrogant?",
-  ];
-
-  const handleSuggestedPromptClick = (prompt: string) => {
-    setInput(prompt);
-  };
-
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (input.trim()) {
-      sendMessage({ text: input });
+      const originalInput = input.trim();
+      let messageToSendToAI = originalInput;
+
+      // If it's the user's first message (after the static greeting), append the specific phrase for the AI
+      if (!isFirstUserMessageSent) {
+        originalFirstUserInputRef.current = originalInput; // Store original for display
+        messageToSendToAI += ' i would like to practice introducing myself';
+        setIsFirstUserMessageSent(true); // Mark that the first user message has been sent
+      }
+
+      sendMessage({ text: messageToSendToAI });
       setInput('');
     }
   };
@@ -47,67 +55,80 @@ export default function Concept1Page() {
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center p-4 bg-prosper-bg-page">
-      <MobileScreen className="mt-4">
+      <MobileScreen className="pt-4">
         <div className="flex flex-col h-full bg-white">
-          {/* Top bar with back button and progress bar */}
-          <div className="flex items-center p-4 border-b border-prosper-gray-light">
-            <div className="flex-1 h-2 bg-prosper-gray-medium rounded-full">
-              <div className="h-full w-1/3 bg-prosper-concept1-green rounded-full"></div>
-            </div>
-          </div>
-
           {/* Chat messages area */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            {/* Blob character and initial message */}
-            <div className="flex items-start space-x-3">
-              <div className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center overflow-hidden">
+          <div className="flex-1 overflow-y-auto p-4 space-y-2 flex flex-col">
+
+            {/* Large blob character and initial message - ALWAYS RENDERED FIRST (STATIC UI) */}
+            <div className="flex flex-col items-center space-y-4">
+              <div className="flex-shrink-0 w-60 h-60 rounded-full flex items-center justify-center overflow-hidden">
                 <Image
                   src="/blob-character.png"
                   alt="Friendly blob character"
-                  width={40}
-                  height={40}
+                  width={60}
+                  height={60}
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="bg-prosper-bg-medium p-3 rounded-lg max-w-[70%]">
-                <p className="text-sm text-prosper-text-dark">
-                  Morning! How can I help?
-                </p>
-              </div>
-            </div>
-
-            {/* Suggested Prompts */}
-            <div className="flex flex-wrap gap-2 mt-4">
-              {suggestedPrompts.map((prompt, index) => (
-                <Button
-                  key={index}
-                  variant="outline"
-                  className="rounded-full text-sm px-3 py-1 h-auto border-prosper-gray-medium text-prosper-text-dark hover:bg-prosper-bg-medium whitespace-normal" // Added whitespace-normal
-                  onClick={() => handleSuggestedPromptClick(prompt)}
-                >
-                  {prompt}
-                </Button>
-              ))}
-            </div>
-
-            {messages.map(message => (
-              <div
-                key={message.id}
-                className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
-                <div
-                  className={`p-3 rounded-lg max-w-[70%] ${
-                    message.role === 'user'
-                      ? 'bg-prosper-concept1-green text-white'
-                      : 'bg-prosper-bg-medium text-prosper-text-dark'
-                  }`}
-                >
-                  {message.parts.map((part, index) =>
-                    part.type === 'text' ? <span key={index}>{part.text}</span> : null,
-                  )}
+              {/* initial message*/}
+              <div className="flex space-x-2">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center overflow-hidden">
+                  <Image
+                    src="/blob-character.png"
+                    alt="Friendly blob character"
+                    width={40}
+                    height={40}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="bg-prosper-bg-medium p-3 rounded-lg max-w-[70%]">
+                  <p className="text-sm text-prosper-text-dark">
+                    {initialAssistantMessageContent}
+                  </p>
                 </div>
               </div>
-            ))}
+            </div>
+
+            {/* Render all messages from the useChat hook (which starts empty) */}
+            {messages.map((message, index) => {
+              // Check if this is the very first message in the `messages` array from useChat, AND it's a user message, AND the flag is set
+              const isFirstUserMessageInChat = message.role === 'user' && index === 0 && isFirstUserMessageSent;
+
+              // Determine the text to display for the message
+              const displayedText = isFirstUserMessageInChat && originalFirstUserInputRef.current
+                ? originalFirstUserInputRef.current
+                : message.parts.find(part => part.type === 'text')?.text || '';
+
+              return (
+                <div
+                  key={message.id}
+                  className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                >
+                  {message.role === 'assistant' && (
+                    <div className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center overflow-hidden mr-2">
+                      <Image
+                        src="/blob-character.png"
+                        alt="Friendly blob character"
+                        width={40}
+                        height={40}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+                  {/* Message content bubble - always rendered */}
+                  <div
+                    className={`p-3 rounded-lg text-sm max-w-[70%] ${
+                      message.role === 'user'
+                        ? 'bg-prosper-concept1-green text-white'
+                        : 'bg-prosper-bg-medium text-prosper-text-dark'
+                    }`}
+                  >
+                    <ReactMarkdown>{displayedText}</ReactMarkdown>
+                  </div>
+                </div>
+              );
+            })}
             {status === 'streaming' && (
               <div className="flex justify-start">
                 <div className="bg-prosper-bg-medium p-3 rounded-lg max-w-[70%]">
