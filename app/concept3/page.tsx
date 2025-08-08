@@ -43,6 +43,9 @@ export default function Concept3Page() {
   // Audio Loading State
   const [isLoadingAudio, setIsLoadingAudio] = useState(false);
 
+  const userVideoRef = useRef<HTMLVideoElement>(null);
+  const [userStream, setUserStream] = useState<MediaStream | null>(null);
+
   // Format for Call Time (HH:MM:SS)
   const formatCallTime = (totalSeconds: number) => {
     const hours = Math.floor(totalSeconds / 3600);
@@ -156,6 +159,48 @@ export default function Concept3Page() {
       }
     };
   }, []); // Empty dependency array ensures this runs once on mount
+
+  // Effect to get user camera stream
+  useEffect(() => {
+    let currentStream: MediaStream | null = null; // Use a local variable for cleanup
+
+    if (!showCallScreen) {
+      const enableCamera = async () => {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+          currentStream = stream; // Assign to local variable for cleanup
+          setUserStream(stream); // Update state
+          console.log('Camera stream obtained:', stream);
+        } catch (err) {
+          console.error('Error accessing user camera:', err);
+          // Optionally, show a message to the user that camera access was denied
+        }
+      };
+
+      enableCamera();
+    }
+
+    // Cleanup function to stop camera stream when component unmounts or showCallScreen changes
+    return () => {
+      if (currentStream) { // Use the local variable for cleanup
+        console.log('Stopping camera stream.');
+        currentStream.getTracks().forEach(track => track.stop());
+      }
+      setUserStream(null); // Clear state
+    };
+  }, [showCallScreen]); // Re-run when showCallScreen changes
+
+  // Effect to assign stream to video element and ensure it plays
+  useEffect(() => {
+    if (userVideoRef.current && userStream) {
+      userVideoRef.current.srcObject = userStream;
+      // Attempt to play the video, catching any errors (e.g., autoplay blocked)
+      userVideoRef.current.play().catch(e => console.error("Error playing user video:", e));
+      console.log('Assigned stream to video element and attempted play:', userStream);
+    } else {
+      console.log('Video ref or userStream not ready for assignment. Ref current:', userVideoRef.current, 'Stream:', userStream);
+    }
+  }, [userStream]); // Depend only on userStream state
 
   const startRecording = () => {
     if (recognition && !isRecording) {
@@ -364,6 +409,17 @@ export default function Concept3Page() {
               </div>
               <span className="text-sm font-medium text-prosper-text-dark">{formatCallTime(elapsedTime)}</span>
             </div>
+
+            {/* User's self-view camera feed */}
+            {userStream && (
+              <video
+                ref={userVideoRef}
+                autoPlay
+                playsInline
+                muted // Mute self-view to avoid echo
+                className="absolute top-[35px] right-4 w-24 h-32 rounded-lg object-cover border-2 border-prosper-gray-medium transform scale-x-[-1] z-20"
+              />
+            )}
 
             <div className="relative flex-1 flex flex-col items-center justify-center bg-prosper-bg-medium text-white p-4">
               <Image
